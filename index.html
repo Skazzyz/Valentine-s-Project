@@ -12,10 +12,10 @@
             align-items: center;
             justify-content: center;
             
-            /* Subtle glowy light pink radial gradient */
+            /* Background: Glowy light pink */
             background: radial-gradient(circle at center, #fff7f9 10%, #ffe3e8 100%);
             
-            /* The "Cute Blue & White" Border Design */
+            /* Border: Cute Blue & White Frame */
             box-sizing: border-box; 
             border: 25px solid white; 
             outline: 15px dashed #bde0fe; 
@@ -93,13 +93,13 @@
             border: none;
             cursor: pointer;
             box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-            transition: transform 0.1s ease;
         }
 
         #yesBtn {
             background-color: #ff4d6d;
             color: white;
             animation: pulse 1.5s infinite;
+            transition: transform 0.1s ease;
         }
 
         @keyframes pulse {
@@ -108,43 +108,49 @@
             100% { transform: scale(1); }
         }
 
+        /* --- THE NO BUTTON TELEPORT LOGIC --- */
         #noBtn {
             background-color: #777;
             color: white;
-            transition: all 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28); 
             z-index: 999;
             position: relative;
+            
+            /* This controls the "Teleport" animation speed */
+            /* We animate transform (scale/rotate) and opacity */
+            transition: transform 0.2s cubic-bezier(0.68, -0.55, 0.27, 1.55), 
+                        opacity 0.2s ease,
+                        background-color 0.1s;
         }
 
-        /* UPDATED: Bigger "or" circle + Grey Shadow */
+        /* The class we add via JS to make it vanish */
+        .teleporting {
+            transform: scale(0) rotate(360deg); /* Shrink and spin */
+            opacity: 0; /* Fade out */
+            filter: blur(10px); /* Motion blur effect */
+            pointer-events: none; /* Can't click while teleporting */
+        }
+
+        /* --- The "or" Button --- */
         .secret-link-btn {
             display: flex;
             align-items: center;
             justify-content: center;
-            
-            /* Made dimensions bigger */
             width: 90px;  
             height: 90px; 
             border-radius: 50%;
-            
-            /* Made font bigger */
             font-size: 2.5rem; 
             color: #ff4d6d;
             background-color: white;
             border: 2px solid #ffebf0;
-            
             text-decoration: none;
             font-weight: bold;
             z-index: 10;
-            
-            /* UPDATED: Light Dark-Grey Shadow */
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15); 
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
         .secret-link-btn:hover {
             transform: scale(1.1); 
-            /* Slightly darker grey on hover */
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); 
         }
 
@@ -199,7 +205,7 @@
         <h1>Do you love me?</h1>
 
         <div class="btn-row">
-            <button id="yesBtn" class="main-btn" onclick="alert('Ni')">Yes</button>
+            <button id="yesBtn" class="main-btn" onclick="alert('coons')">Yes</button>
             
             <a href="https://youtu.be/dQw4w9WgXcQ?si=WG0Imq3Tp8aa0lkU" class="secret-link-btn" target="_blank">or</a>
             
@@ -208,7 +214,7 @@
     </div>
 
     <div class="container-box" id="sad-container">
-        <div class="sad-text">You really spent that much time chasing the "No" button to prove that you don't love me? :c..</div>
+        <div class="sad-text">You really spent that much time chasing the "no" button to prove that you don't love me?</div>
         
         <img src="https://media1.tenor.com/m/-CfhczC_cREAAAAd/angai313-spongebob-sad.gif" alt="Sad Spongebob" class="sad-gif">
         
@@ -221,33 +227,55 @@
         const noBtn = document.getElementById('noBtn');
         const mainPage = document.getElementById('main-page');
         const sadPage = document.getElementById('sad-container');
+        
+        // Taunt messages for the rage bait
+        const taunts = ["Too slow!", "Missed!", "Nope!", "Try again!", "Catch me!"];
 
-        function moveButton() {
-            const padding = 200; 
-            const maxX = window.innerWidth - noBtn.offsetWidth - padding;
-            const maxY = window.innerHeight - noBtn.offsetHeight - padding;
+        function teleportButton() {
+            // 1. RAGE BAIT: Change text immediately to mock them
+            const randomTaunt = taunts[Math.floor(Math.random() * taunts.length)];
+            noBtn.innerText = randomTaunt;
+            noBtn.style.backgroundColor = "#ff4d6d"; // Flash red momentarily
 
-            const newX = Math.random() * maxX + (padding / 2);
-            const newY = Math.random() * maxY + (padding / 2);
+            // 2. Trigger the "Vanish" CSS animation
+            noBtn.classList.add('teleporting');
 
-            noBtn.style.position = 'fixed';
-            noBtn.style.left = `${newX}px`;
-            noBtn.style.top = `${newY}px`;
-            
-            const rotation = Math.floor(Math.random() * 60) - 30;
-            noBtn.style.transform = `rotate(${rotation}deg)`;
+            // 3. Wait for the vanish animation to finish (200ms)
+            setTimeout(() => {
+                // Calculate new position
+                const padding = 200; 
+                const maxX = window.innerWidth - noBtn.offsetWidth - padding;
+                const maxY = window.innerHeight - noBtn.offsetHeight - padding;
+
+                const newX = Math.random() * maxX + (padding / 2);
+                const newY = Math.random() * maxY + (padding / 2);
+
+                // Apply new position instantly while invisible
+                noBtn.style.position = 'fixed';
+                noBtn.style.left = `${newX}px`;
+                noBtn.style.top = `${newY}px`;
+                
+                // Reset text and color
+                noBtn.innerText = "No";
+                noBtn.style.backgroundColor = "#777";
+
+                // 4. Trigger the "Reappear" CSS animation
+                noBtn.classList.remove('teleporting');
+            }, 200); // This must match the CSS transition time
         }
 
-        noBtn.addEventListener('mouseover', moveButton);
+        noBtn.addEventListener('mouseover', teleportButton);
         
+        // Allow clicking only if they are super fast
         noBtn.addEventListener('click', () => {
             mainPage.style.display = 'none'; 
             sadPage.style.display = 'block'; 
         });
 
+        // Mobile support
         noBtn.addEventListener('touchstart', (e) => {
             e.preventDefault(); 
-            moveButton();
+            teleportButton();
         });
     </script>
 </body>

@@ -108,26 +108,15 @@
             100% { transform: scale(1); }
         }
 
-        /* --- THE NO BUTTON TELEPORT LOGIC --- */
+        /* --- THE NO BUTTON (Reverted to Smooth Slide) --- */
         #noBtn {
             background-color: #777;
             color: white;
             z-index: 999;
             position: relative;
             
-            /* This controls the "Teleport" animation speed */
-            /* We animate transform (scale/rotate) and opacity */
-            transition: transform 0.2s cubic-bezier(0.68, -0.55, 0.27, 1.55), 
-                        opacity 0.2s ease,
-                        background-color 0.1s;
-        }
-
-        /* The class we add via JS to make it vanish */
-        .teleporting {
-            transform: scale(0) rotate(360deg); /* Shrink and spin */
-            opacity: 0; /* Fade out */
-            filter: blur(10px); /* Motion blur effect */
-            pointer-events: none; /* Can't click while teleporting */
+            /* Smooth sliding transition (No shrinking/spinning) */
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
         /* --- The "or" Button --- */
@@ -205,7 +194,7 @@
         <h1>Do you love me?</h1>
 
         <div class="btn-row">
-            <button id="yesBtn" class="main-btn" onclick="alert('coons')">Yes</button>
+            <button id="yesBtn" class="main-btn" onclick="alert('Coon')">Yes</button>
             
             <a href="https://youtu.be/dQw4w9WgXcQ?si=WG0Imq3Tp8aa0lkU" class="secret-link-btn" target="_blank">or</a>
             
@@ -214,7 +203,7 @@
     </div>
 
     <div class="container-box" id="sad-container">
-        <div class="sad-text">You really spent that much time chasing the "no" button to prove that you don't love me?</div>
+        <div class="sad-text">You really spent that much time chasing the "No" button to prove that you don't love me? :c..</div>
         
         <img src="https://media1.tenor.com/m/-CfhczC_cREAAAAd/angai313-spongebob-sad.gif" alt="Sad Spongebob" class="sad-gif">
         
@@ -227,44 +216,27 @@
         const noBtn = document.getElementById('noBtn');
         const mainPage = document.getElementById('main-page');
         const sadPage = document.getElementById('sad-container');
-        
-        // Taunt messages for the rage bait
-        const taunts = ["Too slow!", "Missed!", "Nope!", "Try again!", "Catch me!"];
 
-        function teleportButton() {
-            // 1. RAGE BAIT: Change text immediately to mock them
-            const randomTaunt = taunts[Math.floor(Math.random() * taunts.length)];
-            noBtn.innerText = randomTaunt;
-            noBtn.style.backgroundColor = "#ff4d6d"; // Flash red momentarily
+        function moveButton() {
+            // Calculate new position
+            const padding = 200; 
+            const maxX = window.innerWidth - noBtn.offsetWidth - padding;
+            const maxY = window.innerHeight - noBtn.offsetHeight - padding;
 
-            // 2. Trigger the "Vanish" CSS animation
-            noBtn.classList.add('teleporting');
+            const newX = Math.random() * maxX + (padding / 2);
+            const newY = Math.random() * maxY + (padding / 2);
 
-            // 3. Wait for the vanish animation to finish (200ms)
-            setTimeout(() => {
-                // Calculate new position
-                const padding = 200; 
-                const maxX = window.innerWidth - noBtn.offsetWidth - padding;
-                const maxY = window.innerHeight - noBtn.offsetHeight - padding;
-
-                const newX = Math.random() * maxX + (padding / 2);
-                const newY = Math.random() * maxY + (padding / 2);
-
-                // Apply new position instantly while invisible
-                noBtn.style.position = 'fixed';
-                noBtn.style.left = `${newX}px`;
-                noBtn.style.top = `${newY}px`;
-                
-                // Reset text and color
-                noBtn.innerText = "No";
-                noBtn.style.backgroundColor = "#777";
-
-                // 4. Trigger the "Reappear" CSS animation
-                noBtn.classList.remove('teleporting');
-            }, 200); // This must match the CSS transition time
+            // Apply new position - CSS transition handles the smooth slide
+            noBtn.style.position = 'fixed';
+            noBtn.style.left = `${newX}px`;
+            noBtn.style.top = `${newY}px`;
+            
+            // Optional: Simple rotation for fun, but no spinning
+            const rotation = Math.floor(Math.random() * 40) - 20;
+            noBtn.style.transform = `rotate(${rotation}deg)`;
         }
 
-        noBtn.addEventListener('mouseover', teleportButton);
+        noBtn.addEventListener('mouseover', moveButton);
         
         // Allow clicking only if they are super fast
         noBtn.addEventListener('click', () => {
@@ -275,7 +247,7 @@
         // Mobile support
         noBtn.addEventListener('touchstart', (e) => {
             e.preventDefault(); 
-            teleportButton();
+            moveButton();
         });
     </script>
 </body>

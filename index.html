@@ -4,67 +4,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Be My Valentine?</title>
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=VT323&family=Cinzel:wght@900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=VT323&family=Cinzel:wght@900&family=Dancing+Script:wght@700&family=Quicksand:wght@700&display=swap" rel="stylesheet">
     
     <style>
         /* --- CORE LAYOUT --- */
         body {
-            margin: 0;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            margin: 0; height: 100vh; display: flex; align-items: center; justify-content: center;
             background: radial-gradient(circle at center, #fff7f9 10%, #ffe3e8 100%);
-            box-sizing: border-box; 
-            border: 25px solid white; 
-            outline: 15px dashed #bde0fe; 
-            outline-offset: -10px;
-            font-family: 'Arial Rounded MT Bold', 'Helvetica', sans-serif;
-            overflow: hidden; 
-            transition: background 1s ease;
+            box-sizing: border-box; border: 25px solid white; 
+            outline: 15px dashed #bde0fe; outline-offset: -10px;
+            font-family: 'Quicksand', sans-serif; overflow: hidden; 
+            transition: background 2s ease;
+        }
+        body.heavenly-mode {
+            background: radial-gradient(circle at center, #ffffff 10%, #fffacd 40%, #ffd700 100%) !important;
+            box-shadow: inset 0 0 100px #fff;
         }
 
-        /* --- Z-INDEX LAYERING --- */
-        #void-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: black; opacity: 0; pointer-events: none; z-index: 9999999; transition: opacity 1.5s ease-in-out; }
+        /* --- Z-INDEX LAYERS --- */
+        #void-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: black; opacity: 0; pointer-events: none; z-index: 1000000; transition: opacity 1.5s ease-in-out; }
         .fade-to-black { opacity: 1 !important; pointer-events: all !important; }
 
+        /* A White Overlay for the Gift Reveal Phase */
+        #flash-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); opacity: 0; pointer-events: none; z-index: 8000; transition: opacity 1.5s ease; }
+        .flash-active { opacity: 1 !important; pointer-events: all !important; }
+
         /* --- INTRO SCREEN --- */
-        #intro-screen { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: radial-gradient(circle at center, #fff7f9 10%, #ffe3e8 100%); 
-            z-index: 5000; display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            transition: opacity 0.8s ease; 
-        }
-        .intro-text { 
-            font-family: 'Pacifico', cursive; font-size: 11rem; color: #ff4d6d; 
-            text-shadow: 5px 5px 0px white, 8px 8px 0px rgba(255, 77, 109, 0.2); 
-            margin-bottom: 80px; margin-top: 50px; text-align: center; line-height: 1.1; 
-            opacity: 0; animation: flyIn 1.5s cubic-bezier(0.19, 1, 0.22, 1) forwards; 
-        }
+        #intro-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, #fff7f9 10%, #ffe3e8 100%); z-index: 5000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.8s ease; }
+        .intro-text { font-family: 'Pacifico', cursive; font-size: 11rem; color: #ff4d6d; text-shadow: 5px 5px 0px white; margin-bottom: 80px; margin-top: 50px; text-align: center; line-height: 1.1; opacity: 0; animation: flyIn 1.5s cubic-bezier(0.19, 1, 0.22, 1) forwards; }
+        
+        /* UPDATED PROCEED BUTTON */
         .proceed-btn { 
-            position: relative; padding: 25px 80px; font-size: 3rem; 
-            font-family: 'Pacifico', cursive; background: white; color: #ff4d6d; 
-            border: 5px solid #ff4d6d; border-radius: 50px; cursor: pointer; 
-            box-shadow: 0 10px 30px rgba(255, 77, 109, 0.3); 
-            opacity: 0; animation: popIn 0.5s ease-out 1s forwards, bounceBtn 2s infinite ease-in-out 1.5s; 
+            position: relative; padding: 25px 80px; font-size: 3rem; font-family: 'Pacifico', cursive; 
+            background: white; color: #ff4d6d; border: 5px solid #ff4d6d; border-radius: 50px; 
+            cursor: pointer; box-shadow: 0 10px 30px rgba(255, 77, 109, 0.3); opacity: 0; 
+            animation: popIn 0.5s ease-out 1s forwards, bounceBtn 2s infinite ease-in-out 1.5s; 
+            transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
         }
-        .proceed-btn:hover { background-color: #ff4d6d; color: white; }
-        #noThanksBtn {
-            margin-top: 30px; padding: 12px 30px; font-size: 1.3rem; color: #ff4d6d; 
-            background-color: rgba(255, 255, 255, 0.9); border: 2px solid #ffccd5; 
-            border-radius: 30px; cursor: pointer; font-family: 'Arial Rounded MT Bold', sans-serif; 
-            opacity: 0; animation: fadeIn 1s ease-in 1.5s forwards; transition: all 0.2s ease;
-        }
-        #noThanksBtn:hover { background-color: #ffebf0; transform: scale(1.1); border-color: #ff4d6d; }
-
-        /* --- MAIN CONTENT --- */
-        #main-content-wrapper {
-            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            align-items: center; justify-content: center;
-            z-index: 100;
+        .proceed-btn:hover {
+            animation-play-state: paused; /* Pause bounce so it doesn't jitter */
+            transform: scale(1.1) rotate(2deg) !important;
+            background-color: #fff0f5;
+            box-shadow: 0 15px 40px rgba(255, 77, 109, 0.5);
         }
 
-        /* The Box */
+        #noThanksBtn { margin-top: 30px; padding: 12px 30px; font-size: 1.3rem; color: #ff4d6d; background-color: rgba(255, 255, 255, 0.9); border: 2px solid #ffccd5; border-radius: 30px; cursor: pointer; font-family: 'Arial Rounded MT Bold', sans-serif; opacity: 0; animation: fadeIn 1s ease-in 1.5s forwards; transition: all 0.2s ease; }
+        #noThanksBtn:hover { background-color: #ffebf0; transform: scale(1.1); }
+
+        /* --- MAIN CONTENT WRAPPER --- */
+        #main-content-wrapper { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; align-items: center; justify-content: center; z-index: 100; }
+        
+        /* THE BOX CONTAINER */
         .container-box { 
             position: relative; z-index: 200; text-align: center; 
             background: rgba(255, 255, 255, 0.95); 
@@ -76,131 +66,460 @@
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             transition: all 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
-        .pop-in-active { animation: boxPopIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; opacity: 1 !important; }
-        .box-expanded {
-            width: 90vw !important; height: 85vh !important; max-width: none !important;
-            transform: scale(1) !important; border-width: 10px !important;
-            border-style: dashed !important; background: rgba(255, 255, 255, 0.98) !important;
-        }
-
-        /* --- TEXT & BUTTONS --- */
-        h1 { color: #ff4d6d; font-size: 6rem; margin: 0 0 60px 0; text-shadow: 4px 4px #ffdae0; line-height: 1.1; transition: opacity 0.5s; }
-        .btn-row { display: flex; align-items: center; justify-content: center; gap: 30px; flex-wrap: wrap; transition: opacity 0.5s; }
         
+        .pop-in-active { animation: boxPopIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; opacity: 1 !important; }
+        .box-expanded { width: 95vw !important; height: 95vh !important; max-width: none !important; transform: scale(1) !important; border-width: 10px !important; background: rgba(255, 255, 255, 0.98) !important; }
+
+        /* --- QUESTION CONTENT --- */
+        #question-content {
+            width: 100%;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.5s ease;
+        }
+        
+        h1 { color: #ff4d6d; font-size: 6rem; margin: 0 0 60px 0; text-shadow: 4px 4px #ffdae0; line-height: 1.1; }
+        .btn-row { display: flex; align-items: center; justify-content: center; gap: 30px; width: 100%; }
         button.main-btn { padding: 30px 80px; font-size: 3.5rem; font-weight: bold; border-radius: 40px; border: none; cursor: pointer; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
         #yesBtn { background-color: #ff4d6d; color: white; animation: pulse 1.5s infinite; transition: transform 0.1s ease; }
-        #noBtn { background-color: #777; color: white; z-index: 100000; position: relative; transition: 0.05s; }
+        #noBtn { background-color: #777; color: white; z-index: 100000; position: relative; transition: 0.47s; }
         .secret-link-btn { display: flex; align-items: center; justify-content: center; width: 90px; height: 90px; border-radius: 50%; font-size: 2.5rem; color: #ff4d6d; background-color: white; border: 2px solid #ffebf0; text-decoration: none; font-weight: bold; z-index: 10; box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15); transition: transform 0.2s ease; }
 
-        /* Dialogue */
-        #dialogue-content { font-family: 'Pacifico', cursive; font-size: 5rem; color: #ff4d6d; display: none; }
+        /* REACTION IMAGE STYLES */
+        #reaction-img {
+            position: fixed; top: 35%; right: 10%; transform: translateY(-50%);
+            max-width: 40vw; max-height: 50vh; border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3); border: 8px solid white;
+            z-index: 500; display: none;
+        }
+        #floppy-rabbit {
+            position: fixed; top: 60%; left: 50%; transform: translate(-50%, -50%);
+            height: 400px; border-radius: 20px; border: 5px solid white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); z-index: 600; display: none;
+        }
+        #devious-bunny {
+            position: fixed; top: 55%; left: 50%; transform: translate(-50%, -50%);
+            height: 400px; border-radius: 20px; border: 5px solid white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); z-index: 600; display: none;
+        }
+        #woo-bunny {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -20%); 
+            height: 500px; z-index: 600; display: none;
+            clip-path: inset(15% 0 0 0); border-radius: 20px;
+        }
+
+        #dialogue-content { font-family: 'Pacifico', cursive; font-size: 5rem; color: #ff4d6d; display: none; margin-bottom: 20px; z-index: 600; text-shadow: 3px 3px 0 white; }
         .shake-text { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
         .pop-text { animation: popText 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-        .reward-text { 
-            animation: bounceIn 0.8s cubic-bezier(0.215, 0.610, 0.355, 1.000) both; 
-            font-size: 7rem; color: #ff0055; text-shadow: 4px 4px 0px #ffccd5;
-        }
+        .reward-text { animation: bounceIn 0.8s cubic-bezier(0.215, 0.610, 0.355, 1.000) both; font-size: 8rem; color: #ff0055; text-shadow: 4px 4px 0px #ffccd5; margin-bottom: 300px; }
 
-        /* --- ENVELOPE --- */
-        .envelope-wrapper { display: none; margin-top: 20px; perspective: 1000px; animation: flyInPaper 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-        .envelope { width: 600px; height: 400px; background-color: #ff4d6d; position: relative; border-radius: 15px; box-shadow: 0 25px 50px rgba(0,0,0,0.3); z-index: 50; cursor: pointer; transition: transform 0.3s ease; }
-        .envelope:hover { transform: scale(1.02); }
-        .envelope::after { content: ''; position: absolute; top: 0; left: 0; width: 0; height: 0; border-left: 300px solid transparent; border-right: 300px solid transparent; border-top: 210px solid #ff8fa3; transform-origin: top; transition: transform 0.6s ease 0.2s, z-index 0.2s linear 0.4s; z-index: 52; }
-        .envelope-body { position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; background-color: #ff4d6d; z-index: 51; border-radius: 15px; overflow: hidden; }
-        .envelope-body::before { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 0; border-left: 300px solid #ff4d6d; border-right: 300px solid #ff4d6d; border-bottom: 200px solid #ff6380; z-index: 53; }
-        .envelope-body::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 0; border-left: 300px solid transparent; border-right: 300px solid transparent; border-bottom: 200px solid #ff5c7a; z-index: 53; }
-        .letter { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 500px; height: 500px; background: white; border-radius: 5px; transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.6s; z-index: 49; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); padding: 40px; box-sizing: border-box; }
-        .letter h2 { font-family: 'Pacifico', cursive; font-size: 3.5rem; color: #ff4d6d; margin: 0 0 20px 0; }
-        .letter p { font-family: 'Arial Rounded MT Bold', sans-serif; font-size: 1.5rem; color: #555; text-align: center; margin-top: 10px; line-height: 1.5; }
-        .envelope.open::after { transform: rotateX(180deg); z-index: 1; }
-        .envelope.open .letter { transform: translateX(-50%) translateY(-250px); z-index: 55; }
-        .claim-btn { margin-top: 20px; padding: 15px 40px; background: #ff4d6d; color: white; border: none; border-radius: 30px; font-family: 'Arial Rounded MT Bold', sans-serif; font-size: 1.5rem; cursor: pointer; box-shadow: 0 5px 15px rgba(255,77,109,0.4); transition: transform 0.2s; }
-        .claim-btn:hover { transform: scale(1.1); background-color: #ff3355; }
+        /* ========================================= */
+        /* === ENVELOPE SYSTEM === */
+        /* ========================================= */
+        
+        .envelope-phase-container { display: none; width: 100%; height: 100%; align-items: center; justify-content: center; animation: flyInPaper 1s forwards; }
+        .envelope-base { position: relative; width: 400px; height: 260px; margin-top: 50px; cursor: pointer; perspective: 1500px; transition: opacity 1.5s ease, transform 1.5s ease; }
+        .envelope-base:hover { transform: scale(1.02); transition: 0.3s ease; }
 
-        /* --- THE GOLDEN TICKET --- */
-        #ticket-wrapper {
-            display: none; position: fixed; top: 50%; left: 50%;
-            transform: translate(-50%, -50%) scale(0);
-            z-index: 600;
-            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            /* Floating Animation */
-            animation: floatTicket 3s ease-in-out infinite alternate;
+        .envelope-back { position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; background-color: #d6336c; border-radius: 10px; z-index: 1; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+
+        .letter-sheet {
+            position: absolute; bottom: 0; left: 20px; width: 360px; height: 240px; 
+            background: linear-gradient(to bottom, #fffcf5 0%, #fff7f9 100%);
+            border-radius: 5px; z-index: 2; display: flex; flex-direction: column; 
+            padding: 40px;
+            box-sizing: border-box;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            transition: all 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            overflow: visible !important; /* Ensures stamp can overflow */
         }
         
-        .ticket {
-            width: 800px; height: 400px; /* BIGGER */
-            /* GOLD GRADIENT */
-            background: linear-gradient(45deg, #FFD700, #FFEC8B, #C59112, #FFD700);
-            border-radius: 20px;
-            border: 6px solid #B8860B; /* Dark Gold Border */
-            /* Subtle Golden Glow */
-            box-shadow: 0 0 40px 10px rgba(255, 223, 0, 0.4), inset 0 0 20px rgba(255,255,255,0.5);
-            display: flex; align-items: center; justify-content: center;
-            position: relative;
-            overflow: hidden;
+        .letter-text { 
+            opacity: 0; 
+            transition: opacity 0.5s ease 1.5s; 
+            text-align: left; 
+            height: 100%; 
+            display: flex; 
+            flex-direction: column; 
+            position: relative; 
+            z-index: 20; 
+        }
+        
+        /* HEADER - BIGGER */
+        .letter-text h2 { 
+            font-family: 'Pacifico', cursive;
+            color: #ff4d6d; 
+            font-size: 3.3rem; /* BIGGER */
+            margin: 0 0 20px 0; 
+            text-align: center; 
+            line-height: 1.2; 
         }
 
-        /* Inner Dashed Box */
-        .ticket-inner {
-            width: 92%; height: 85%;
-            border: 5px dashed #7a5c28; /* Dark Engraved color */
-            border-radius: 15px;
-            display: flex; align-items: center; justify-content: center;
-            position: relative;
+        /* BODY TEXT - BIGGER */
+        .letter-text p { 
+            font-family: 'Dancing Script', cursive; 
+            font-size: 2rem; /* INCREASED SIZE */
+            color: #444; 
+            line-height: 1.4; 
+            margin-bottom: 15px; 
+            text-align: left; 
+        }
+
+        /* SURPRISE TEXT - BIGGER */
+        .surprise-text {
+            font-family: 'Pacifico', cursive;
+            font-size: 2.5rem !important; /* INCREASED SIZE */
+            color: #d6336c !important;
+            text-align: center !important;
+            margin-top: 40px !important;
+            margin-bottom: 15px !important;
+        }
+
+
+        /* --- STICKER SCRAPBOOK (INSIDE) --- */
+        .sticker-scrapbook {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin: 40px 0 50px 0; /* INCREASED TOP MARGIN TO MOVE DOWN */
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.5); 
+            transform: rotate(-4deg); 
+            border-radius: 8px;
+            opacity: 0; 
+            transition: opacity 1s ease 1.8s;
+        }
+        
+        .envelope-base.open .sticker-scrapbook { opacity: 1; }
+
+        .sticker-scrapbook img {
+            width: 240px;  /* BIGGER GIFS */
+            height: 240px; /* BIGGER GIFS */
+            object-fit: contain;
+            border-radius: 10px;
+            filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.1));
+            transition: transform 0.2s;
+            background: white;
+            padding: 9px;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.10);
+        }
+
+        .sticker-scrapbook img:nth-child(1) { transform: rotate(-5deg); }
+        .sticker-scrapbook img:nth-child(2) { transform: rotate(3deg); }
+        .sticker-scrapbook img:nth-child(3) { transform: rotate(-4deg); }
+
+        .sticker-scrapbook img:hover { transform: scale(1.1) rotate(0deg); z-index: 5; }
+
+        /* --- BIGGER & MORE OVERFLOWING STAMP (ABSOLUTE BOTTOM RIGHT) --- */
+        .stamp-img {
+            position: absolute;
+            bottom: -100px; /* Pushed way down */
+            right: -200px;  /* Pushed way right */
+            width: 350px;  /* BIGGER SIZE */
+            height: auto;
+            transform: rotate(15deg);
+            opacity: 0;
+            mix-blend-mode: multiply;
+            z-index: 25;
+            pointer-events: none;
+            transition: opacity 1s ease 2s;
+        }
+        
+        .envelope-base.open .stamp-img { opacity: 0.9; }
+
+
+        /* Gift Area Layout */
+        .gift-area { 
+            margin-top: auto; text-align: center; 
+            border-top: 3px dashed #ffd1dc; padding-top: 15px; 
+            display: flex; flex-direction: column; align-items: center;
+            height: 150px; 
+            justify-content: center;
+            position: relative; 
+            z-index: 30; 
+        }
+
+        .envelope-pocket { position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; z-index: 3; pointer-events: none; }
+        .pocket-left { position: absolute; bottom: 0; left: 0; width: 0; height: 0; border-left: 200px solid #ff4d6d; border-top: 130px solid transparent; border-bottom: 130px solid #ff4d6d; border-bottom-left-radius: 10px; }
+        .pocket-right { position: absolute; bottom: 0; right: 0; width: 0; height: 0; border-right: 200px solid #ff4d6d; border-top: 130px solid transparent; border-bottom: 110px solid #ff4d6d; border-bottom-right-radius: 10px; }
+        .pocket-bottom { position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to top, rgba(0,0,0,0.1), transparent); z-index: 4; border-radius: 10px; pointer-events: none; }
+        .envelope-flap { position: absolute; top: 0; left: 0; width: 100%; height: 140px; background: #ff6b8b; clip-path: polygon(0 0, 100% 0, 50% 100%); transform-origin: top; transition: transform 0.6s ease 0s, z-index 0.1s linear 0.2s; z-index: 5; display: flex; align-items: flex-end; justify-content: center; }
+        .wax-seal { position: absolute; bottom: 30px; width: 60px; height: 60px; background: #c92a2a; border-radius: 50%; box-shadow: 0 4px 8px rgba(0,0,0,0.3), inset 0 2px 5px rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 30px; color: rgba(0,0,0,0.2); border: 2px solid #a61e1e; z-index: 6; }
+
+        /* OPEN ANIMATIONS - LETTER SIZE (Increased width slightly for bigger content) */
+        .envelope-base.open .envelope-flap { transform: rotateX(180deg); z-index: 0; }
+        .envelope-base.open .letter-sheet { animation: paperFloat 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; animation-delay: 0.6s; z-index: 6; }
+        .envelope-base.open .letter-text { opacity: 1; }
+        
+        @keyframes paperFloat {
+            0% { transform: translateY(0) scale(1); z-index: 2; width: 360px; height: 240px; }
+            40% { transform: translateY(-100px) scale(1); z-index: 2; }
+            41% { z-index: 10; } 
+            100% { 
+                transform: translateY(-50%) scale(1); 
+                top: 50%; 
+                width: 850px; 
+                height: 92vh; /* INCREASED HEIGHT TO FIT CONTENT */
+                left: 50%; 
+                margin-left: -425px; 
+                z-index: 10; 
+            }
+        }
+
+        /* ========================================= */
+        /* === NEW ANIMATED GIFT SYSTEM === */
+        /* ========================================= */
+        
+        /* BIGGER GIFT ICON */
+        .gift-container {
+            position: relative; 
+            width: 120px; 
+            height: 120px; 
+            cursor: pointer; z-index: 50; perspective: 600px;
+            transition: transform 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55), left 1.5s ease, top 1.5s ease;
+            margin-top: 15px; 
+        }
+
+        /* BACKGROUND GLOW - INCREASED FOR BIGGER GIFT */
+        .gift-glow {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 180px; height: 180px;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.6) 0%, rgba(255, 215, 0, 0) 70%);
+            border-radius: 50%; z-index: -1;
+            animation: glowPulse 2s infinite ease-in-out;
+        }
+        @keyframes glowPulse { 0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; } 50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.8; } }
+
+        /* IDLE ANIMATION */
+        .gift-animate-wrapper {
+            width: 100%; height: 100%;
+            transform-origin: bottom center;
+            animation: giftIdle 2.5s infinite ease-in-out; 
+        }
+
+        @keyframes giftIdle {
+            0%, 100% { transform: rotate(0deg) translateY(0) scale(1, 1); }
+            20% { transform: rotate(-3deg) translateY(0) scale(1.05, 0.95); } 
+            40% { transform: rotate(3deg) translateY(-8px) scale(0.95, 1.05); } 
+            60% { transform: rotate(-3deg) translateY(0) scale(1.05, 0.95); } 
+            80% { transform: rotate(2deg) translateY(-4px) scale(0.98, 1.02); } 
+        }
+
+        /* BOX STRUCTURE */
+        .gift-box { position: relative; width: 100%; height: 100%; z-index: 1; transition: transform 0.1s; }
+        
+        /* BODY (YELLOW) */
+        .gift-body { 
+            position: absolute; bottom: 0; width: 100%; height: 80%; 
+            background: linear-gradient(135deg, #ffd700, #ffc107);
+            border-radius: 8px; 
+            box-shadow: inset 0 -3px 5px rgba(0,0,0,0.1); 
+        }
+        
+        /* LID (YELLOW) */
+        .gift-lid { 
+            position: absolute; top: 0; left: -5%; width: 110%; height: 25%; 
+            background: linear-gradient(to bottom right, #ffe57f, #ffd700); 
+            border-radius: 6px; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15); 
             z-index: 2;
         }
 
-        /* ENGRAVED TEXT */
-        .ticket h1 {
-            font-family: 'Cinzel', serif; 
-            font-size: 7.5rem;
-            margin: 0;
-            line-height: 1;
-            text-transform: uppercase;
-            text-align: center;
-            color: #7a5c28; /* Dark brown/gold for engraving */
-            /* Engraved Effect: Highlight on bottom right, Shadow on top left */
-            text-shadow: 
-                2px 2px 0px rgba(255, 255, 255, 0.5), 
-                -1px -1px 1px rgba(0, 0, 0, 0.2);
+        /* RIBBONS (RED) */
+        .ribbon-vertical { 
+            position: absolute; left: 50%; top: 0; width: 16px; height: 100%; 
+            background: #ff0000;
+            transform: translateX(-50%); 
+            box-shadow: 0 0 2px rgba(0,0,0,0.2); 
         }
-
-        /* Shine Animation */
-        .ticket::after {
-            content: ""; position: absolute; top: 0; left: -100%;
-            width: 50%; height: 100%;
-            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0) 100%);
-            transform: skewX(-25deg);
-            animation: shine 3s infinite;
+        .ribbon-horizontal { 
+            position: absolute; top: 50%; left: 0; width: 100%; height: 16px; 
+            background: #ff0000;
+            transform: translateY(-50%); 
+            box-shadow: 0 0 2px rgba(0,0,0,0.2); 
+        }
+        
+        /* --- GIFT BOW (ANIMATED) --- */
+        .gift-bow { 
+            position: absolute; 
+            bottom: 100%; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            width: 60px; height: 35px; 
+            z-index: 10; 
+        }
+        
+        /* The loops - MADE PUFFIER */
+        .gift-loop {
+            position: absolute;
+            bottom: 0;
+            width: 35px; 
+            height: 35px; 
+            background-color: #ff0000;
+            border-radius: 50% 50% 0 50%; 
+            box-shadow: inset 0 -2px 5px rgba(0,0,0,0.2);
             z-index: 1;
+            animation: bowFlutter 2s infinite ease-in-out;
         }
 
-        /* --- THE GOOFY RAYS --- */
-        #rays-container {
+        @keyframes bowFlutter {
+            0%, 100% { transform: rotate(var(--r-base)) scale(1); }
+            50% { transform: rotate(var(--r-mid)) scale(1.1); }
+        }
+
+        .gift-loop.left {
+            left: 50%; 
+            transform-origin: bottom right; 
+            --r-base: -135deg;
+            --r-mid: -145deg;
+            transform: translateX(-100%) rotate(-45deg); 
+            animation-name: bowFlutterLeft;
+        }
+        @keyframes bowFlutterLeft {
+            0%, 100% { transform: translateX(-100%) rotate(-45deg); }
+            50% { transform: translateX(-100%) rotate(-55deg) scale(1.1); }
+        }
+
+        .gift-loop.right {
+            left: 50%; 
+            transform-origin: bottom left; 
+            transform: rotate(45deg);
+            border-radius: 50% 50% 50% 0; 
+            animation-name: bowFlutterRight;
+        }
+        @keyframes bowFlutterRight {
+            0%, 100% { transform: rotate(45deg); }
+            50% { transform: rotate(55deg) scale(1.1); }
+        }
+
+        /* The center knot (CIRCLE) - MADE BIGGER & ANIMATED */
+        .gift-center { 
+            position: absolute; 
+            bottom: -12px; 
+            left: 50%; 
+            width: 25px; height: 25px; 
+            background-color: #d00000; 
+            border-radius: 50%; 
+            z-index: 5;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            border: 3px solid #ff4d4d; 
+            animation: knotPulse 2s infinite ease-in-out; 
+        }
+
+        @keyframes knotPulse {
+            0%, 100% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.15); } /* Pulses bigger */
+        }
+
+        /* SPARKLES */
+        .sparkle { position: absolute; background: #ffd700; width: 5px; height: 5px; border-radius: 50%; opacity: 0; animation: sparkleTwinkle 1.5s infinite; z-index: 10; }
+        @keyframes sparkleTwinkle { 0%, 100% { opacity: 0; transform: scale(0); } 50% { opacity: 1; transform: scale(1.4); box-shadow: 0 0 5px gold; } }
+        
+        .s1 { top: -20px; left: -10px; animation-delay: 0s; }
+        .s2 { top: 10px; right: -25px; animation-delay: 0.3s; }
+        .s3 { bottom: 10px; left: -20px; animation-delay: 0.7s; }
+        .s4 { bottom: 60px; right: -15px; animation-delay: 1.1s; }
+        .s5 { top: -30px; right: 10px; animation-delay: 0.5s; width: 4px; height: 4px; }
+        .s6 { bottom: -10px; left: 30%; animation-delay: 0.2s; width: 6px; height: 6px; }
+
+        /* --- STAGE 2: CENTERED MODE --- */
+        .gift-container.centered-mode {
             position: fixed; top: 50%; left: 50%;
-            width: 200vmax; height: 200vmax;
-            transform: translate(-50%, -50%);
-            z-index: 550; /* Behind ticket */
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 1s;
+            transform: translate(-50%, -50%) scale(3); /* Bigger! */
+            z-index: 9020; 
+            margin: 0;
+            cursor: pointer;
         }
-        .rays {
-            width: 100%; height: 100%;
-            /* Yellow and transparent rays */
-            background: repeating-conic-gradient(
-                from 0deg,
-                rgba(255, 223, 0, 0.15) 0deg 20deg,
-                transparent 20deg 40deg
-            );
-            animation: rotateRays 20s linear infinite;
+        
+        .gift-container.clickable-again {
+            cursor: pointer;
         }
 
+        /* --- STAGE 3: EXPLOSION --- */
+        .gift-container.popped {
+            animation: explodeBox 0.3s forwards ease-out;
+        }
+
+        @keyframes explodeBox {
+            0% { transform: translate(-50%, -50%) scale(3); opacity: 1; }
+            50% { transform: translate(-50%, -50%) scale(3.5); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(4.5); opacity: 0; display: none; }
+        }
+
+        /* ========================================= */
+
+        /* --- GOLDEN TICKET & BUTTON --- */
+        #ticket-wrapper {
+            display: none; position: fixed; top: 50%; left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            z-index: 9010; 
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s ease;
+            animation: floatTicket 3s ease-in-out infinite alternate;
+            flex-direction: column; align-items: center; 
+            opacity: 0; 
+        }
+        .ticket {
+            width: 800px; height: 400px;
+            background: linear-gradient(45deg, #FFD700, #FFEC8B, #C59112, #FFD700);
+            border-radius: 20px; border: 6px solid #B8860B;
+            box-shadow: 0 0 40px 10px rgba(255, 223, 0, 0.4), inset 0 0 20px rgba(255,255,255,0.5);
+            display: flex; align-items: center; justify-content: center;
+            position: relative; overflow: hidden;
+        }
+        .ticket-inner { width: 92%; height: 85%; border: 5px dashed #7a5c28; border-radius: 15px; display: flex; align-items: center; justify-content: center; position: relative; z-index: 2; }
+        .ticket h1 {
+            font-family: 'Cinzel', serif; font-size: 7.5rem; margin: 0; line-height: 1; text-transform: uppercase; text-align: center; color: #7a5c28;
+            text-shadow: 2px 2px 0px rgba(255, 255, 255, 0.5), -1px -1px 1px rgba(0, 0, 0, 0.2);
+        }
+        .ticket::after {
+            content: ""; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0) 100%);
+            transform: skewX(-25deg); animation: shine 3s infinite; z-index: 1;
+        }
+
+        /* GOOD ENDING BUTTON */
+        #restartBtn {
+            margin-top: 40px;
+            padding: 15px 40px;
+            font-size: 2rem;
+            font-family: 'Pacifico', cursive;
+            background: white;
+            color: #d4af37; /* Gold */
+            border: 4px solid #d4af37;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            transition: transform 0.2s, opacity 1s ease;
+            pointer-events: none; /* locked until fade in */
+            opacity: 0; /* Hidden initially */
+            animation: pulseBtn 2s infinite;
+        }
+        #restartBtn:hover { transform: scale(1.1); background: #fff8e1; }
+        @keyframes pulseBtn { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+
+        /* --- RAYS --- */
+        #rays-container { position: fixed; top: 50%; left: 50%; width: 200vmax; height: 200vmax; transform: translate(-50%, -50%); z-index: 8500; pointer-events: none; opacity: 0; transition: opacity 1s; }
+        .rays { width: 100%; height: 100%; background: repeating-conic-gradient(from 0deg, rgba(255, 223, 0, 0.15) 0deg 20deg, transparent 20deg 40deg); animation: rotateRays 20s linear infinite; }
+
+        /* --- ANIMATIONS --- */
         @keyframes rotateRays { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes floatTicket { 0% { transform: translate(-50%, -55%) scale(1); } 100% { transform: translate(-50%, -45%) scale(1); } }
         @keyframes shine { 0% { left: -100%; } 20% { left: 200%; } 100% { left: 200%; } }
+        @keyframes marchH { from { background-position: 0 0; } to { background-position: 40px 0; } }
+        @keyframes marchV { from { background-position: 0 0; } to { background-position: 0 40px; } }
+        @keyframes flyIn { 0% { transform: scale(0.5) translateY(100px); opacity: 0; } 100% { transform: scale(1) translateY(0); opacity: 1; } }
+        @keyframes fadeIn { to { opacity: 1; } }
+        @keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes bounceBtn { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-10px) scale(1.05); } }
+        @keyframes boxPopIn { 0% { opacity: 0; transform: scale(0.5); } 100% { opacity: 1; transform: scale(1); } }
+        @keyframes burstOut { 0% { transform: translate(-50%, -50%) scale(0); opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)) scale(1.5); opacity: 0; } }
+        @keyframes shake { 10%, 90% { transform: translate3d(-2px, 0, 0); } 20%, 80% { transform: translate3d(4px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-8px, 0, 0); } 40%, 60% { transform: translate3d(8px, 0, 0); } }
+        @keyframes popText { 0% { transform: scale(0); opacity: 0; } 80% { transform: scale(1.2); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes bounceIn { 0%, 20%, 40%, 60%, 80%, 100% {animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);} 0% {opacity: 0; transform: scale3d(.3, .3, .3);} 20% {transform: scale3d(1.1, 1.1, 1.1);} 40% {transform: scale3d(.9, .9, .9);} 60% {opacity: 1; transform: scale3d(1.03, 1.03, 1.03);} 80% {transform: scale3d(.97, .97, .97);} 100% {opacity: 1; transform: scale3d(1, 1, 1);} }
+        @keyframes flyInPaper { 0% { opacity: 0; transform: translateY(50px) scale(0.8); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+        @keyframes sparkleFlash { 0%, 100% { opacity: 0; transform: scale(0); } 50% { opacity: 1; transform: scale(1.2); } }
 
-        /* --- DEAD END (SAD) --- */
+            /* --- DEAD END (SAD) --- */
         #sad-container { display: none; }
         .sad-text { font-size: 3rem; color: #ff4d6d; margin-bottom: 30px; }
         .sad-gif { width: 100%; max-width: 500px; border-radius: 20px; border: 6px dashed #ff4d6d; margin-bottom: 30px; }
@@ -231,20 +550,14 @@
         @keyframes flyIn { 0% { transform: scale(0.5) translateY(100px); opacity: 0; } 100% { transform: scale(1) translateY(0); opacity: 1; } }
         @keyframes fadeIn { to { opacity: 1; } }
         @keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        @keyframes bounceBtn { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-10px) scale(1.05); } }
-        @keyframes boxPopIn { 0% { opacity: 0; transform: scale(0.5); } 100% { opacity: 1; transform: scale(1); } }
         @keyframes drop { 0% { transform: translateY(-10vh) translateX(-5vh) rotate(20deg); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(110vh) translateX(20vh) rotate(20deg); opacity: 0; } }
         @keyframes flicker { 0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; text-shadow: 0 0 20px rgba(255, 255, 255, 0.8); } 20%, 24%, 55% { opacity: 0.3; text-shadow: none; } }
-        @keyframes burstOut { 0% { transform: translate(-50%, -50%) scale(0); opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)) scale(1.5); opacity: 0; } }
-        @keyframes shake { 10%, 90% { transform: translate3d(-2px, 0, 0); } 20%, 80% { transform: translate3d(4px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-8px, 0, 0); } 40%, 60% { transform: translate3d(8px, 0, 0); } }
-        @keyframes popText { 0% { transform: scale(0); opacity: 0; } 80% { transform: scale(1.2); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
-        @keyframes bounceIn { 0%, 20%, 40%, 60%, 80%, 100% {animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);} 0% {opacity: 0; transform: scale3d(.3, .3, .3);} 20% {transform: scale3d(1.1, 1.1, 1.1);} 40% {transform: scale3d(.9, .9, .9);} 60% {opacity: 1; transform: scale3d(1.03, 1.03, 1.03);} 80% {transform: scale3d(.97, .97, .97);} 100% {opacity: 1; transform: scale3d(1, 1, 1);} }
-        @keyframes flyInPaper { 0% { opacity: 0; transform: translateY(-500px) rotate(-10deg) scale(0.5); } 60% { opacity: 1; transform: translateY(30px) rotate(5deg) scale(1.1); } 100% { transform: translateY(0) rotate(0deg) scale(1); } }
 
         .confetti { position: absolute; width: 12px; height: 12px; background-color: #f00; animation: fall linear forwards; z-index: 9000; }
         @keyframes fall { to { transform: translateY(110vh) rotate(700deg); } }
         .heart-burst { position: absolute; font-size: 2rem; pointer-events: none; animation: burstOut 0.6s ease-out forwards; }
         
+        /* THE BOW CSS */
         .main-bow-wrapper { position: fixed; top: 12px; left: 50%; transform: translateX(-50%) scale(0.6); z-index: 100; display: flex; align-items: center; justify-content: center; filter: drop-shadow(0 4px 4px rgba(0,0,0,0.1)); }
         .bow-knot { width: 35px; height: 35px; background-color: #e3f2fd; border-radius: 50%; z-index: 2; border: 4px solid white; }
         .bow-loop { width: 70px; height: 45px; background-color: #bde0fe; border: 4px solid white; position: absolute; top: 50%; transform: translateY(-50%); }
@@ -258,11 +571,34 @@
         .bunny { animation: hop 4s infinite ease-in-out; }
         @keyframes float { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-30px) rotate(25deg); } }
         @keyframes hop { 0%, 100% { transform: translateY(0) scaleX(1); } 40% { transform: translateY(-40px) scaleX(0.9); } 50% { transform: translateY(-45px) scaleX(1.1); } }
+
+        /* --- RAIN ANIMATION (Sideways/Sad) --- */
+        .rain {
+            position: absolute;
+            top: -50px; /* Start just above screen */
+            width: 2px;
+            height: 50px; /* Long streaks */
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.3));
+            z-index: 1;
+            pointer-events: none;
+            transform: rotate(-20deg); /* Slant the drop */
+            animation: stormRain linear infinite;
+        }
+
+        @keyframes stormRain {
+            0% {
+                transform: translate(0, 0) rotate(-20deg);
+            }
+            100% {
+                transform: translate(150px, 110vh) rotate(-20deg); /* Move down AND right */
+            }
+        }
     </style>
 </head>
 <body>
 
     <div id="void-overlay"></div>
+    <div id="flash-overlay"></div>
     <div id="dead-end-screen">
         <div id="sequence-text"></div>
         <div id="final-content">
@@ -281,10 +617,15 @@
         <div class="decoration" style="bottom:20%; right:15%;">💖</div>
         <div class="decoration" style="top:20%; right:20%;">💖</div>
         <div class="decoration" style="bottom:15%; left:25%;">💖</div>
+        
+        <div class="main-bow-wrapper" id="introBow">
+            <div class="bow-ribbon left"></div><div class="bow-ribbon right"></div>
+            <div class="bow-loop left"></div><div class="bow-loop right"></div>
+            <div class="bow-knot"></div>
+        </div>
+
         <h1 class="intro-text">Happy Valentine's Day!!!</h1>
-        <button class="proceed-btn" id="proceedBtn" onclick="startMain(event)">
-            Proceed? 
-        </button>
+        <button class="proceed-btn" id="proceedBtn" onclick="startMain(event)">Proceed?</button>
         <button id="noThanksBtn" onclick="closeThePage()">no thanks</button>
     </div>
 
@@ -302,7 +643,6 @@
         <div class="decoration" style="bottom:15%; left:15%;">🌹</div>
         <div class="decoration bunny" style="bottom:20%; right:25%;">🐇</div>
         <div class="decoration" style="bottom:10%; right:10%;">💝</div>
-        <div class="decoration" style="top:55%; left:8%;">🌸</div>
 
         <div class="container-box" id="main-page">
             <div id="question-content">
@@ -314,22 +654,84 @@
                 </div>
             </div>
 
-            <div id="dialogue-content" class="dialogue-text" style="display: none;"></div>
+            <div id="dialogue-content" class="dialogue-text"></div>
+            
+            <img id="reaction-img" src="https://preview.redd.it/where-does-a-fucking-tibetan-monks-scale-image-unrelated-v0-hss73dd9zs6f1.jpeg?auto=webp&s=8fba405d7aacd3fd8269ab27edf10add7407475e" alt="Monk">
+            
+            <img id="floppy-rabbit" src="https://thumbs.dreamstime.com/b/rabbit-floppy-ears-18762318.jpg?w=1400" alt="Floppy Ear Rabbit">
 
-            <div class="envelope-wrapper" id="envelope-wrapper" onclick="openEnvelope()">
-                <div class="envelope" id="envelope">
-                    <div class="envelope-body"></div>
-                    <div class="letter">
-                        <h2>CONGRATULATIONS!</h2>
-                        <p>I knew you'd make the right choice! ❤️<br><br>You have unlocked the Premium Valentine's Package.</p>
-                        <button class="claim-btn" onclick="showTicket(event)">Claim Reward 🎟️</button>
+             <img id="devious-bunny" src="https://images.squarespace-cdn.com/content/v1/59171732db29d6960a15348e/1610886722001-P9DY5NLFOMQRAZJMIPND/Bunny+Has+Something+Devious+Up+His+Sleeve.jpg?format=2500w" alt="Devious Bunny">
+
+            <img id="woo-bunny" src="https://media.tenor.com/tkPCsRVu-tkAAAAM/woo-yeah-bunny-no-text-woo-yeah-bunny.gif" alt="Woo Yeah Bunny">
+
+
+            <div class="envelope-phase-container" id="envelope-phase">
+                <div class="envelope-base" onclick="openEnvelope(this)" id="envelope-base">
+                    <div class="envelope-back"></div>
+                    <div class="letter-sheet" id="letter-sheet">
+                        
+                        <div class="letter-text" id="letter-text-content">
+                            <h2>Happy Valentine's Day Dorian!!</h2>
+                            
+                            <p>
+                                I love you so much. I’m so grateful you’re my boyfriend, even with the distance between us. I know we’ve been arguing more and don’t get to spend as much time together like before, and I’m sorry for that. But no matter what, you’re still my favorite person. I hope this little letter makes up for even a tiny bit of the time we miss. I can’t wait to make a million more memories with you.
+                            </p>
+
+                            <div class="sticker-scrapbook">
+                                <img src="https://media.tenor.com/kiveRZlk6-8AAAAM/bunny-bunny-kiss.gif" alt="Bunny Kiss">
+                                <img src="https://media1.tenor.com/m/Jxed1W_mn9EAAAAC/bunnies-bunnies-kissing.gif" alt="Bunnies Kissing">
+                                <img src="https://media1.tenor.com/m/1NPfvJZ8ewQAAAAd/rabbit-carrot-bunny-bell.gif" alt="Bunny Bell">
+                            </div>
+
+                            <p class="surprise-text">
+                                I have another surprise for you...
+                            </p>
+
+                            <div class="gift-area">
+                                <div class="gift-container" id="gift-container" onclick="openGift(event)">
+                                    <div class="gift-glow"></div>
+                                    <div class="gift-animate-wrapper">
+                                        <div class="sparkle s1"></div><div class="sparkle s2"></div>
+                                        <div class="sparkle s3"></div><div class="sparkle s4"></div>
+                                        <div class="sparkle s5"></div><div class="sparkle s6"></div>
+                                        <div class="gift-box">
+                                            <div class="gift-lid">
+                                                <div class="ribbon-vertical"></div>
+                                                <div class="ribbon-horizontal"></div>
+                                                <div class="gift-bow">
+                                                    <div class="gift-loop left"></div>
+                                                    <div class="gift-loop right"></div>
+                                                    <div class="gift-center"></div>
+                                                </div>
+                                            </div>
+                                            <div class="gift-body">
+                                                <div class="ribbon-vertical"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <img src="https://i.pinimg.com/736x/a3/0a/1d/a30a1dc84da77c8604e49ad3562cea18.jpg" 
+                             class="stamp-img" 
+                             alt="Stamp">
+                    </div>
+                    
+                    <div class="envelope-pocket">
+                        <div class="pocket-left"></div>
+                        <div class="pocket-right"></div>
+                        <div class="pocket-bottom"></div>
+                    </div>
+                    <div class="envelope-flap">
+                        <div class="wax-seal">💌</div>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="container-box" id="sad-container">
-            <div class="sad-text">You really spent THAT much time chasing the "No" button to prove that you don't love me? :c..</div>
+            <div class="sad-text">You really spent THAT much effort chasing the "No" button to prove that you don't love me? :c..</div>
             <img src="https://media1.tenor.com/m/-CfhczC_cREAAAAd/angai313-spongebob-sad.gif" alt="Sad Spongebob" class="sad-gif">
             <div>
                 <button id="exitBtn">💔 Fuck You</button>
@@ -337,32 +739,32 @@
         </div>
     </div>
 
-    <div id="rays-container">
-        <div class="rays"></div>
-    </div>
-    
+    <div id="rays-container"><div class="rays"></div></div>
     <div id="ticket-wrapper">
         <div class="ticket">
-            <div class="ticket-inner">
-                <h1>Deez Ovaries</h1>
-            </div>
+            <div class="ticket-inner"><h1>Deez Ovaries</h1></div>
         </div>
+        <button id="restartBtn" onclick="location.reload()">Good Ending ↺</button>
     </div>
 
     <script>
-        // --- VARIABLES ---
         let hasChasedNo = false; 
         let yesClickCount = 0;   
         const traitorMessages = [
-            "You already started chasing No.<br>Go ahead. Catch it.", // First warning
-            "The no can be clicked, try harder",
+            "You already started chasing the button.<br>Go ahead. Catch it.", 
+            "The button can be clicked, try harder",
             "No you cant click this",
             "Try harder",
             "Stop clicking this button",
-            "Keep chasing like a dummy cat"
+            "Keep chasing like a dummy",
+            ">:c",
         ];
 
         window.onload = function() {
+            // SAFEGUARD: Ensure ticket is hidden initially
+            document.getElementById('ticket-wrapper').style.display = 'none';
+            document.getElementById('ticket-wrapper').style.opacity = '0';
+
             const status = localStorage.getItem('relationshipStatus');
             if (status === 'fresh_breakup') { activateDeadEndSequence(); } 
             else if (status === 'permanent_breakup') { showPermanentVoid(); } 
@@ -375,23 +777,15 @@
             document.body.style.background = 'white';
         }
 
-        // --- CONFETTI ENGINE (Modified for Gold) ---
         function createConfetti(isExplosion = false, isGold = false) {
-            let colors;
-            if (isGold) {
-                colors = ['#FFD700', '#F0E68C', '#DAA520', '#FFFFFF', '#FFF8DC'];
-            } else {
-                colors = ['#ff4d6d', '#bde0fe', '#ffc2d1', '#fff', '#ffd700'];
-            }
-            
+            let colors = isGold ? ['#FFD700', '#F0E68C', '#DAA520', '#FFFFFF', '#FFF8DC'] : ['#ff4d6d', '#bde0fe', '#ffc2d1', '#fff', '#ffd700'];
             const container = document.body;
-            const count = isExplosion ? 300 : 150;
-            
+            // INCREASED COUNT FOR BETTER EFFECT
+            const count = isExplosion ? 400 : 150; 
             for (let i = 0; i < count; i++) {
                 const confetti = document.createElement('div');
                 confetti.classList.add('confetti');
                 confetti.style.left = Math.random() * 100 + 'vw';
-                
                 if (isExplosion) {
                     confetti.style.top = Math.random() * 100 + 'vh';
                     confetti.style.animation = `burstOut 1s ease-out forwards`;
@@ -400,7 +794,6 @@
                     confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
                     confetti.style.animationDelay = (Math.random() * 2) + 's';
                 }
-                
                 confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
                 if(Math.random() > 0.5) { confetti.style.width = '8px'; confetti.style.height = '8px'; confetti.style.borderRadius = '50%'; } 
                 else { confetti.style.width = '10px'; confetti.style.height = '15px'; }
@@ -411,7 +804,7 @@
         function triggerEmojiRain() {
             const emojis = ['💖', '🌸', '🐰', '💍', '✨', '💌', '🍬'];
             const container = document.body;
-            const duration = 5000;
+            const duration = 000;
             const interval = setInterval(() => {
                 const drop = document.createElement('div');
                 drop.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
@@ -458,9 +851,7 @@
             }, 800);
         }
 
-        // --- THE YES LOGIC ---
         async function handleYesClick() {
-            // CHECK FOR TRAITOR
             if (hasChasedNo) {
                 const title = document.querySelector('#question-content h1');
                 title.innerHTML = traitorMessages[yesClickCount % traitorMessages.length];
@@ -469,10 +860,14 @@
                 btn.classList.add('shake-text');
                 setTimeout(() => btn.classList.remove('shake-text'), 500);
                 yesClickCount++;
-                return; // BLOCK ENTRY
+                return;
             }
 
-            // --- NORMAL LOGIC (Loyal) ---
+            // --- BUG FIX: DESTROY NO BUTTON SO IT DOESN'T FLOAT AROUND ---
+            const noBtn = document.getElementById('noBtn');
+            noBtn.style.display = 'none';
+            // -------------------------------------------------------------
+
             const mainBox = document.getElementById('main-page');
             const questionContent = document.getElementById('question-content');
             const dialogueContent = document.getElementById('dialogue-content');
@@ -482,73 +877,172 @@
             
             mainBox.classList.add('box-expanded');
             
-            // Reverted to snappy 1s wait
             const delay = ms => new Promise(res => setTimeout(res, ms));
             await delay(1000); 
 
+            // 1. "Huh?"
             dialogueContent.style.display = 'block';
             dialogueContent.innerHTML = 'Huh?'; dialogueContent.className = 'shake-text';
-            await delay(2000); dialogueContent.style.opacity = '0'; await delay(500);
+            await delay(1500); 
 
-            dialogueContent.style.opacity = '1'; dialogueContent.innerHTML = 'You actually clicked yes?? XD'; dialogueContent.className = 'pop-text';
-            await delay(2500); dialogueContent.style.opacity = '0'; await delay(500);
-
-            dialogueContent.style.opacity = '1'; dialogueContent.innerHTML = "Well then, here's a..."; dialogueContent.className = '';
-            await delay(2000); 
+            // 2. "Huh? Wha?" + Monk Image
+            dialogueContent.innerHTML = 'Huh? Wha?'; // Appended text
+            dialogueContent.className = 'shake-text'; // Re-trigger shake
             
-            dialogueContent.innerHTML = "REWARD!!"; 
+            const reactionImg = document.getElementById('reaction-img');
+            reactionImg.style.display = 'block';
+            reactionImg.classList.add('pop-in-active'); 
+
+            await delay(5000); // Wait 5s with image
+
+            // 3. Cleanup Monk Image & Fade Text
+            reactionImg.style.display = 'none';
+            dialogueContent.style.opacity = '0'; 
+            await delay(500);
+
+            // 4. "You actually clicked yes" + Floppy Rabbit (BIGGER & CENTERED)
+            const floppyRabbit = document.getElementById('floppy-rabbit');
+            dialogueContent.style.opacity = '1'; 
+            dialogueContent.innerHTML = 'You actually clicked yes?? XD'; 
+            dialogueContent.className = 'pop-text';
+            floppyRabbit.style.display = 'block'; // Show rabbit
+            floppyRabbit.classList.add('pop-in-active');
+
+            await delay(3500); 
+            
+            // Cleanup Floppy Rabbit
+            dialogueContent.style.opacity = '0'; 
+            floppyRabbit.style.display = 'none';
+            await delay(500);
+
+            // 5. "Well then..." + Devious Bunny (NEW)
+            const deviousBunny = document.getElementById('devious-bunny');
+            dialogueContent.style.opacity = '1'; 
+            dialogueContent.innerHTML = "Well then, here's a..."; 
+            dialogueContent.className = '';
+            deviousBunny.style.display = 'block';
+            deviousBunny.classList.add('pop-in-active');
+            await delay(2500); 
+
+            // Cleanup Devious Bunny
+            deviousBunny.style.display = 'none';
+            
+            // 6. REWARD + Woo Bunny (BIGGER) + Better Confetti
+            const wooBunny = document.getElementById('woo-bunny');
+            dialogueContent.innerHTML = "REWARD!! >:3"; 
             dialogueContent.className = 'reward-text';
+            wooBunny.style.display = 'block'; // Show Woo Bunny
+            wooBunny.classList.add('pop-in-active');
+            
+            // Better Confetti (More particles)
             createConfetti(true); 
-            await delay(2500); dialogueContent.style.opacity = '0'; await delay(500);
+            
+            await delay(4000); // Wait 4s
+            
+            // Cleanup Reward Phase
+            dialogueContent.style.opacity = '0'; 
+            wooBunny.style.display = 'none';
+            await delay(500);
 
             dialogueContent.style.display = 'none';
-            document.getElementById('envelope-wrapper').style.display = 'block';
+            document.getElementById('envelope-phase').style.display = 'flex';
         }
 
-        function openEnvelope() {
-            const envelope = document.getElementById('envelope');
-            if (!envelope.classList.contains('open')) {
-                envelope.classList.add('open');
-                triggerEmojiRain(); 
+        function openEnvelope(envelopeEl) {
+            if (!envelopeEl.classList.contains('open')) {
+                envelopeEl.classList.add('open');
+                triggerEmojiRain();
             }
         }
 
-        // --- NEW TICKET LOGIC ---
-        function showTicket(e) {
-            e.stopPropagation(); 
-            const envelope = document.getElementById('envelope-wrapper');
-            envelope.style.transition = "transform 0.5s ease, opacity 0.5s ease";
-            envelope.style.transform = "scale(0) rotate(720deg)"; 
-            envelope.style.opacity = "0";
+        /* --- UPDATED OPEN GIFT LOGIC (2-STEP) --- */
+        let giftStep = 0; // 0 = initial, 1 = centered, 2 = popped
 
-            // Activate Heavenly Rays
-            document.getElementById('rays-container').style.opacity = '1';
+        function openGift(e) {
+            e.stopPropagation();
+            const gift = e.currentTarget;
 
-            setTimeout(() => {
-                envelope.style.display = 'none'; 
+            // STEP 1: Center the Gift (Everything else pans out)
+            if (giftStep === 0) {
+                giftStep = 1;
+                
+                // 1. Capture current position
+                const rect = gift.getBoundingClientRect();
+                
+                // 2. Teleport to Body (so it doesn't disappear with envelope)
+                gift.style.position = "fixed";
+                gift.style.left = rect.left + "px";
+                gift.style.top = rect.top + "px";
+                gift.style.zIndex = "9020"; // Above ticket and overlays
+                gift.style.pointerEvents = "none"; // LOCK INTERACTIONS DURING ANIMATION
+                
+                document.body.appendChild(gift);
+
+                // 3. Fade out the background/envelope ("everything else pans out")
+                const envelope = document.getElementById('envelope-phase');
+                envelope.style.opacity = "0";
+                envelope.style.transform = "scale(0.9)"; 
+                setTimeout(() => envelope.style.display = "none", 1500);
+                
+                // Show white overlay to clean up background
+                const flashOverlay = document.getElementById('flash-overlay');
+                flashOverlay.classList.add('flash-active');
+                
+                // 4. Trigger animation to center (Gift enlargens)
+                requestAnimationFrame(() => {
+                    gift.offsetHeight; 
+                    gift.style.left = "50%";
+                    gift.style.top = "50%";
+                    gift.classList.add('centered-mode'); // Applies scale(3)
+                });
+
+                // 5. UNLOCK INTERACTION AFTER ANIMATION
+                setTimeout(() => {
+                    gift.style.pointerEvents = "auto";
+                    gift.classList.add('clickable-again');
+                }, 1500);
+            }
+            // STEP 2: Explode (Reveal Ticket + Button)
+            else if (giftStep === 1) {
+                giftStep = 2;
+                
+                // Trigger explosion animation
+                gift.classList.add('popped');
+                
+                // Confetti
+                createConfetti(true, true); // Massive Gold Burst
+                // Continuous confetti
+                let celebrationInterval = setInterval(() => {
+                    createConfetti(false, true); 
+                }, 300);
+                setTimeout(() => clearInterval(celebrationInterval), 5000);
                 
                 const ticket = document.getElementById('ticket-wrapper');
-                ticket.style.display = 'block';
+                document.getElementById('rays-container').style.opacity = '1';
+                document.body.classList.add('heavenly-mode');
                 
-                // Trigger ZoomIn Entrance
+                // REVEAL FOR TICKET & BUTTON (Synced)
                 setTimeout(() => {
+                    ticket.style.display = 'flex'; 
+                    void ticket.offsetWidth; // force reflow
+                    ticket.style.opacity = '1'; 
                     ticket.style.transform = "translate(-50%, -50%) scale(1)";
-                }, 50);
-                
-                createConfetti(true, true); // Gold confetti
-            }, 500);
+                    
+                    // Reveal button slightly after ticket lands
+                    const btn = document.getElementById('restartBtn');
+                    btn.style.opacity = '1';
+                    btn.style.pointerEvents = 'auto';
+                }, 300);
+            }
         }
 
-        /* --- NO BUTTON LOGIC --- */
         const noBtn = document.getElementById('noBtn');
         const mainPage = document.getElementById('main-page');
         const sadPage = document.getElementById('sad-container');
         const borderBow = document.getElementById('borderBow');
 
         function moveButton(e) {
-            // MARK AS TRAITOR IMMEDIATELY
             hasChasedNo = true;
-
             if (noBtn.parentNode !== document.body) { document.body.appendChild(noBtn); }
             const winW = window.innerWidth;
             const winH = window.innerHeight;
@@ -595,7 +1089,7 @@
             const deadEnd = document.getElementById('dead-end-screen');
             deadEnd.style.display = 'flex';
             const textEl = document.getElementById('sequence-text');
-            const words = ["Wow...", "Really?", "That's it?", "I'm single now..?"];
+            const words = ["Wow...", "Really?", "That's it?", "You don't love me..?"];
             const delay = ms => new Promise(res => setTimeout(res, ms));
             for (let word of words) {
                 textEl.innerText = word; textEl.style.opacity = '1';
@@ -650,11 +1144,12 @@
 
         function createRain() {
             const deadEnd = document.getElementById('dead-end-screen');
-            for (let i = 0; i < 100; i++) {
+            for (let i = 0; i < 150; i++) { // Increased drop count
                 const drop = document.createElement('div');
                 drop.classList.add('rain');
-                drop.style.left = Math.random() * 100 + 'vw';
-                drop.style.animationDuration = (Math.random() * 1 + 0.5) + 's';
+                // Random position across width (including off-screen left to account for wind)
+                drop.style.left = (Math.random() * 120) + 'vw'; 
+                drop.style.animationDuration = (Math.random() * 2 + 1) + 's'; // Faster rain
                 drop.style.animationDelay = Math.random() * 2 + 's';
                 deadEnd.appendChild(drop);
             }
